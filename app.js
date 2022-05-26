@@ -25,6 +25,15 @@ app.get('/', (req, res) => {
     .catch((error) => { return res.status(422).json(error) })
 })
 
+app.get('/todos/:id', (req, res) => {
+  const id = req.params.id
+  // 在 Sequelize 裡面，用 id 查詢的方法是 findByPk
+  return Todo.findByPk(id)
+  // 資料轉換成 plain object 的方法，只需要直接在傳入樣板前加上 toJSON()
+    .then(todo => res.render('detail', { todo: todo.toJSON() }))
+    .catch(error => console.log(error))
+})
+
 app.get('/users/login', (req, res) => {
   res.render('login')
 })
