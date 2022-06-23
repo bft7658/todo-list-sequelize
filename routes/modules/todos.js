@@ -2,9 +2,18 @@ const express = require('express')
 const router = express.Router()
 const { Todo } = require('../../models')
 
-// create
+// view create
 router.get('/new', (req, res) => {
   res.render('new')
+})
+
+// post create
+router.post('/', (req, res) => {
+  const UserId = req.user.id
+  const name = req.body.name
+  return Todo.create({ name, UserId })
+    .then(() => res.redirect('/'))
+    .catch(error => console.log(error))
 })
 
 // view detail
@@ -23,6 +32,21 @@ router.get('/:id/edit', (req, res) => {
   const id = req.params.id
   return Todo.findOne({ where: { id, UserId } })
     .then(todo => res.render('edit', { todo: todo.toJSON() }))
+    .catch(error => console.log(error))
+})
+
+// post edit
+router.put('/:id', (req, res) => {
+  const UserId = req.user.id
+  const id = req.params.id
+  const { isDone, name } = req.body
+  return Todo.findOne({ where: { id, UserId } })
+    .then(todo => {
+      todo.name = name
+      todo.isDone = isDone === 'on'
+      return todo.save()
+    })
+    .then(() => res.redirect('/'))
     .catch(error => console.log(error))
 })
 
