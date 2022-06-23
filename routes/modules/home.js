@@ -4,10 +4,11 @@ const { Todo } = require('../../models')
 
 // 定義首頁路由
 router.get('/', (req, res) => {
+  const UserId = req.user.id
   return Todo.findAll({
+    where: { UserId },
     raw: true,
-    nest: true,
-    where: { UserId: req.user.id }
+    nest: true
   })
     .then((todos) => { return res.render('index', { todos }) })
     .catch((error) => { return res.status(422).json(error) })
